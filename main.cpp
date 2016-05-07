@@ -2,10 +2,11 @@
 #include <cmath>
 using namespace std;
 void imprimirTablero(int[4][4][4]);
-void hacerMovimiento(int[4][4][4], int[4][4][4], bool);
+int hacerMovimiento(int[4][4][4], int[4][4][4], bool);
 bool gano(int, int, int[4][4][4]);
 int main(int argc, char const *argv[]){
 	bool jugador = false;
+	int ganador;
 	int pozo[4][4][4] = {
 		{{0,0,0,0},{0,0,0,1},{0,0,1,0},{0,0,1,1}},
 		{{0,1,0,0},{0,1,0,1},{0,1,1,0},{0,1,1,1}},
@@ -24,11 +25,12 @@ int main(int argc, char const *argv[]){
 		cout<<"---------------------------------TABLERO-------------------------------------"<<endl;
 		imprimirTablero(tablero);
 		jugador = !jugador;
-		hacerMovimiento(pozo,tablero, jugador);
-	}while(1);
+		ganador = hacerMovimiento(pozo,tablero, jugador);
+	}while(ganador == 3);
+	cout<<"GANO EL JUGADOR" << ganador <<endl;
 	return 0;
 }
-void hacerMovimiento(int pozo[4][4][4], int tablero[4][4][4], bool jugador){
+int hacerMovimiento(int pozo[4][4][4], int tablero[4][4][4], bool jugador){
 	int fila, columna, filaTablero, columnaTablero;
 	do{
 		cout << "JUGADOR " << (jugador ? 1 : 2) << endl;
@@ -57,7 +59,7 @@ void hacerMovimiento(int pozo[4][4][4], int tablero[4][4][4], bool jugador){
 		tablero[filaTablero][columnaTablero][k] = pozo[fila][columna][k];
 		pozo[fila][columna][k] = 3;
 	}
-	cout<<"GANO??? =>" << gano(filaTablero, columnaTablero, tablero);
+	return gano(filaTablero, columnaTablero, tablero) ? !jugador : 3;
 }
 void imprimirTablero(int tablero[4][4][4]){
 	const int DIFERENCIA = 3;
@@ -82,7 +84,6 @@ bool gano(int fila, int columna, int tablero[4][4][4]){
 					if(tablero[i][j][k] == tablero[fila][columna][k]){
 						valFila[k]++;
 						valCol[k]++;
-						// break;
 					}
 				}
 				for(int l = 0; l < 4; l++){
@@ -99,30 +100,33 @@ bool gano(int fila, int columna, int tablero[4][4][4]){
 			}
 		}
 	}
-	// for(int i = 0; i < 4; i++){
-	// 	int valFila[4] = {0};
-	// 	for(int j = 0; j < 4; j++){
-	// 		if(abs(i - 1 || j == columna){
-	// 			for(int k = 0; k < 4; k++){
-	// 				if(tablero[i][j][k] == tablero[fila][columna][k]){
-	// 					valFila[k]++;
-	// 					valCol[k]++;
-	// 					// break;
-	// 				}
-	// 			}
-	// 			for(int l = 0; l < 4; l++){
-	// 				if(valCol[l] == 4){
-	// 					return true;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
+	int diagonal[4] = {0};
+	int diagonalInversa[4] = {0};
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 4; j++){
+			if(j == i){
+				for(int k = 0; k < 4; k++){
+					if(tablero[i][j][k] == tablero[fila][columna][k]){
+						diagonal[k]++;
+					}
+				}
+			}else if( i + j == 3){
+				for(int k = 0; k < 4; k++){
+					if(tablero[i][j][k] == tablero[fila][columna][k]){
+						diagonalInversa[k]++;
+					}
+				}
+			}
+		}
 		
-	// 	for(int l = 0; l < 4; l++){
-	// 		if(valFila[l] == 4){
-	// 			return true;
-	// 		}
-	// 	}
-	// }
+		for(int l = 0; l < 4; l++){
+			if(diagonal[l] == 4){
+				return true;
+			}
+			if(diagonalInversa[l] == 4){
+				return true;
+			}
+		}
+	}
 	return 0;
 }
